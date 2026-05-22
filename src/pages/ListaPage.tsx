@@ -1,27 +1,24 @@
-import { useState, useContext } from "react";
-import { ParticipantesContext } from "../context/ParticipantesContext";
-import { filtrarParticipantes } from "../utils/filtros";
+import { useSearchParticipantes } from "../hooks/useSearchParticipantes";
 import Busqueda from "../components/Busqueda";
 import TarjetaParticipantes from "../components/TarjetaParticipante";
 
 /**
  * Página principal que muestra el listado de participantes.
  * 
- * Permite filtrar la lista por nombre, modalidad y nivel mediante el componente Busqueda.
- * Maneja estados de carga y visualización condicional de resultados.
+ * Delega el estado de los filtros y la lógica de filtrado al custom hook useSearchParticipantes.
  * 
  * @returns {JSX.Element} Vista con buscador y grilla de participantes.
  */
 export default function ListaPage() {
-  const { participantes, cargando } = useContext(ParticipantesContext);
-
-  const [filtros, setFiltros] = useState({
-    texto: "",
-    modalidad: "",
-    nivel: "",
-  });
-
-  const listaFiltrada = filtrarParticipantes(participantes, filtros);
+  const {
+    filtros,
+    setFiltros,
+    listaFiltrada,
+    cargando,
+    searchRef,
+    limpiarFiltros,
+    totalParticipantes,
+  } = useSearchParticipantes();
 
   let contenidoLista;
 
@@ -31,7 +28,7 @@ export default function ListaPage() {
         Cargando participantes, bancame un toque...
       </div>
     );
-  } else if (participantes.length === 0) {
+  } else if (totalParticipantes === 0) {
     contenidoLista = (
       <div className="col-span-3 text-center text-gray-500 font-medium">
         No hay participantes aún. ¡Agregá el primero!
@@ -51,7 +48,12 @@ export default function ListaPage() {
 
   return (
     <div className="flex flex-col gap-2 min-h-screen items-center justify-start bg-white pb-20">
-      <Busqueda filtros={filtros} onFiltrar={setFiltros} />
+      <Busqueda 
+        filtros={filtros} 
+        onFiltrar={setFiltros} 
+        searchRef={searchRef} 
+        onLimpiar={limpiarFiltros}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-64 mt-4 max-w-4xl mx-auto w-full px-8">
         {contenidoLista}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import type { RefObject } from "react";
 import type { FiltrosBusqueda } from "../utils/filtros";
 
 /**
@@ -9,50 +9,33 @@ interface BusquedaProps {
   filtros: FiltrosBusqueda;
   /** Callback para actualizar los filtros en el estado global/padre */
   onFiltrar: (nuevosFiltros: FiltrosBusqueda) => void;
+  /** Referencia al elemento input de búsqueda provisto por el hook padre */
+  searchRef: RefObject<HTMLInputElement | null>;
+  /** Callback para restablecer los filtros de búsqueda a su estado inicial */
+  onLimpiar: () => void;
 }
 
 /**
  * Componente de barra de búsqueda con filtros por texto, modalidad y nivel.
  * 
+ * Recibe toda la lógica a través de propiedades, manteniéndose como un componente de presentación puro.
+ * 
  * @param {BusquedaProps} props - Propiedades del componente.
  * @returns {JSX.Element} Un contenedor con inputs y selects para filtrar participantes.
  */
-export default function Busqueda({ filtros, onFiltrar }: BusquedaProps) {
-  const searchRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const manejarAtajo = (e: KeyboardEvent) => {
-      // Si presiona Ctrl + B, enfocamos el buscador
-      if (e.ctrlKey && e.key.toLowerCase() === "b") {
-        e.preventDefault();
-        searchRef.current?.focus();
-      }
-    };
-
-    window.addEventListener("keydown", manejarAtajo);
-    
-    // Limpieza al desmontar el componente
-    return () => {
-      window.removeEventListener("keydown", manejarAtajo);
-    };
-  }, []);
-  /**
-   * Resetea todos los filtros a su estado inicial vacío.
-   */
-  const limpiarFiltros = () => {
-    onFiltrar({
-      texto: "",
-      modalidad: "",
-      nivel: "",
-    });
-  };
+export default function Busqueda({ 
+  filtros, 
+  onFiltrar, 
+  searchRef, 
+  onLimpiar 
+}: BusquedaProps) {
 
   return (
     <div className="grid grid-cols-[1fr_1fr_1fr_auto] items-center m-4 mb-6 gap-2 w-full max-w-4xl mx-auto px-8 mt-8 border border-gray-200 p-4 shadow-sm rounded bg-gray-50">
       <input
         ref={searchRef}
         type="text"
-        placeholder="Buscar por nombre..."
+        placeholder="Buscar por nombre... (Ctrl + B)"
         value={filtros.texto}
         onChange={(e) => onFiltrar({ ...filtros, texto: e.target.value })}
         className="w-full border border-gray-300 p-2 rounded shadow-sm bg-white"
@@ -84,7 +67,8 @@ export default function Busqueda({ filtros, onFiltrar }: BusquedaProps) {
 
       {/* Botón purificador */}
       <button
-        onClick={limpiarFiltros}
+        type="button"
+        onClick={onLimpiar}
         className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded shadow-sm transition"
         title="Limpiar filtros"
       >

@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef } from "react";
-import { useParticipantes } from "../hooks/useParticipante";
+import { useContext, useEffect, useId, useRef } from "react";
+import { ParticipantesContext } from "../context/ParticipantesContext";
 import { useForm } from "../hooks/useForm";
 
 /**
@@ -35,7 +35,7 @@ interface FormularioProps {
  */
 export default function Formulario({ onSuccess }: FormularioProps) {
   const baseId = useId();
-  const { agregar, editar, participanteSeleccionado, seleccionarParaEdicion } = useParticipantes();
+  const { agregar, editar, participanteSeleccionado, seleccionarParaEdicion } = useContext(ParticipantesContext);
 
   const { formData, handleChange, resetForm, setValues, setFormData } = useForm(ESTADO_INICIAL);
   
