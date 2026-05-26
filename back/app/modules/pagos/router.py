@@ -4,8 +4,8 @@ from sqlmodel import Session, select
 
 from app.core.mercadopago import sdk
 from app.core.helper import get_ngrok_url
-from app.database import engine
-from app.models.pagos import Pagos
+from app.core.database import engine
+from app.modules.pagos.model import Pagos
 
 import uuid
 
