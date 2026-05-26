@@ -73,7 +73,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={`overflow-hidden transition-all duration-300 bg-green-600 ${isOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"}`}>
+      <div className={`overflow-hidden transition-all duration-300 bg-green-600 ${isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"}`}>
         <div className="flex flex-col p-4 gap-3">
           <Link 
             to="/lista" 
@@ -91,6 +91,13 @@ export default function Navbar() {
               ➕ Nuevo Participante
             </Link>
           )}
+          <Link 
+            to="/cursos" 
+            onClick={() => setIsOpen(false)}
+            className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
+          >
+            🎓 Cursos
+          </Link>
           <Link 
             to="/publica" 
             onClick={() => setIsOpen(false)}

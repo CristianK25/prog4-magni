@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import PublicaPage from "./pages/PublicaPage";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./routes/PrivateRoute";
+import CursosPage from "./pages/CursosPage";
 import PaymentSuccess from "./pages/pagos/PaymentSucces";
 import PaymentFailure from "./pages/pagos/PaymentFailure";
 import PaymentPending from "./pages/pagos/PaymentPending";
@@ -41,6 +42,14 @@ function App() {
           element={
             <PrivateRoute>
               <ListaPage />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/cursos" 
+          element={
+            <PrivateRoute>
+              <CursosPage />
             </PrivateRoute>
           } 
         />
