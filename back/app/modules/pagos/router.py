@@ -1,8 +1,13 @@
 from pydantic import BaseModel
 from fastapi import APIRouter, Query, Request
+from sqlmodel import Session, select
+
 from app.core.mercadopago import sdk
-import uuid
 from app.core.helper import get_ngrok_url
+from app.database import engine
+from app.models.pagos import Pagos
+
+import uuid
 
 router = APIRouter(prefix="/pagos", tags=["Pagos"])
 
@@ -14,11 +19,15 @@ class CursoRequest(BaseModel):
 
 @router.post("/crear-preferencia")
 def crear_preferencia(curso: CursoRequest):
-    
+
     ngrok_url = get_ngrok_url()
+
     if not ngrok_url:
-        return {"status": "error", "message": "Ngrok URL no disponible"}
-    
+        return {
+            "status": "error",
+            "message": "Ngrok URL no disponible"
+        }
+
     external_reference = str(uuid.uuid4())
 
     preference_data = {
@@ -30,10 +39,11 @@ def crear_preferencia(curso: CursoRequest):
             }
         ],
         "back_urls": {
-            "success": f"{ngrok_url}/success",
-            "failure": f"{ngrok_url}/failure",
-            "pending": f"{ngrok_url}/pending"
+            "success": f"{ngrok_url}/pagos/success",
+            "failure": f"{ngrok_url}/pagos/failure",
+            "pending": f"{ngrok_url}/pagos/pending"
         },
+        "notification_url": f"{ngrok_url}/pagos/webhook",
         "auto_return": "approved",
         "external_reference": external_reference
     }
@@ -43,7 +53,6 @@ def crear_preferencia(curso: CursoRequest):
     return {
         "id": preference_response["response"]["id"],
         "init_point": preference_response["response"]["init_point"],
-        "sandbox_init_point": preference_response["response"].get("sandbox_init_point"),
         "external_reference": external_reference
     }
 
@@ -54,6 +63,7 @@ def success(
     status: str = Query(None),
     external_reference: str = Query(None)
 ):
+
     if not payment_id:
         return {
             "status": "success",
@@ -102,10 +112,6 @@ async def mercadopago_webhook(request: Request):
 
     body = await request.json()
 
-    # Mercado Pago manda el tipo de evento
-    # ej: payment.created / payment.updated
-    topic = body.get("type") or body.get("topic")
-
     data = body.get("data", {})
 
     payment_id = data.get("id")
@@ -114,14 +120,35 @@ async def mercadopago_webhook(request: Request):
         return {"status": "ignored"}
 
     payment_info = sdk.payment().get(payment_id)
+
     payment = payment_info["response"]
 
     status = payment.get("status")
     external_reference = payment.get("external_reference")
 
-    # 🔴 ACÁ ES DONDE ACTUALIZÁS TU BASE DE DATOS
-    # ejemplo:
-    # update_order(external_reference, status)
+    with Session(engine) as session:
+
+        existing = session.exec(
+            select(Pagos).where(Pagos.payment_id == str(payment_id))
+        ).first()
+
+        if existing:
+
+            existing.status = status
+
+            session.add(existing)
+
+        else:
+
+            nuevo_pago = Pagos(
+                payment_id=str(payment_id),
+                status=status,
+                external_reference=external_reference
+            )
+
+            session.add(nuevo_pago)
+
+        session.commit()
 
     return {
         "status": "received",
