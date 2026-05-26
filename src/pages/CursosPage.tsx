@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { pagosService } from "../services/pagosService";
 
 /**
@@ -31,6 +31,15 @@ const CURSOS_DISPONIBLES: Curso[] = [
  */
 export default function CursosPage() {
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [comprados, setComprados] = useState<string[]>([]);
+
+  useEffect(() => {
+    pagosService.misCompras()
+      .then(compras => {
+        setComprados(compras.map(c => c.curso_nombre));
+      })
+      .catch(err => console.error("Error al cargar compras previas:", err));
+  }, []);
 
   /**
    * Maneja el clic en "QUIERO ESTE CURSO".
@@ -82,13 +91,22 @@ export default function CursosPage() {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => handleBuy(curso)}
-                  disabled={loadingId === curso.id}
-                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold rounded-md shadow transition-colors"
-                >
-                  {loadingId === curso.id ? "Conectando..." : "QUIERO ESTE CURSO"}
-                </button>
+                {comprados.includes(curso.title) ? (
+                  <button
+                    disabled
+                    className="w-full py-3 px-4 bg-green-100 text-green-800 font-bold rounded-md shadow cursor-not-allowed"
+                  >
+                    YA TENÉS ESTE CURSO
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBuy(curso)}
+                    disabled={loadingId === curso.id}
+                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold rounded-md shadow transition-colors"
+                  >
+                    {loadingId === curso.id ? "Conectando..." : "QUIERO ESTE CURSO"}
+                  </button>
+                )}
               </div>
             ))}
           </div>

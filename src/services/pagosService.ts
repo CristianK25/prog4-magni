@@ -6,6 +6,7 @@ export interface Compra {
   payment_id: string;
   status: "success" | "failure" | "pending";
   curso_nombre: string;
+  usuario_id: number | null;
   external_reference: string;
   created_at: string;
 }
@@ -30,6 +31,14 @@ export const pagosService = {
    */
   listarCompras: async (): Promise<Compra[]> => {
     const response = await api.get("/pagos/");
+    return response.data;
+  },
+
+  /**
+   * Obtiene los nombres de los cursos que el usuario actual ya compró y están aprobados.
+   */
+  misCompras: async (): Promise<{ curso_nombre: string }[]> => {
+    const response = await api.get("/pagos/mis-compras");
     return response.data;
   }
 };

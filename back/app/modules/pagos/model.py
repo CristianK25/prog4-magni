@@ -12,6 +12,7 @@ class Pagos(SQLModel, table=True):
 
     external_reference: str = Field(index=True)
     curso_nombre: str = Field(default="Sin nombre")
+    usuario_id: Optional[int] = Field(default=None, index=True)
 
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

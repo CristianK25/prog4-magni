@@ -8,7 +8,7 @@ from app.core.mercadopago import sdk
 from app.core.helper import get_ngrok_url
 from app.core.database import engine, get_session
 from app.modules.pagos.model import Pagos
-from app.modules.usuarios.router import get_current_admin_user
+from app.modules.usuarios.router import get_current_admin_user, get_current_user
 
 import uuid
 
@@ -33,12 +33,38 @@ def listar_compras(
             "payment_id": p.payment_id,
             "status": p.status,
             "curso_nombre": p.curso_nombre,
+            "usuario_id": p.usuario_id,
             "external_reference": p.external_reference,
             "created_at": p.created_at.isoformat(),
         }
         for p in pagos
     ]
 
+
+# -------------------------
+# MIS COMPRAS (USER)
+# -------------------------
+@router.get("/mis-compras", response_model=List[dict])
+def mis_compras(
+    session: Session = Depends(get_session),
+    user=Depends(get_current_user)
+):
+    """
+    Devuelve las compras aprobadas del usuario actual.
+    """
+    pagos = session.exec(
+        select(Pagos).where(
+            Pagos.usuario_id == user.id,
+            Pagos.status == "success"
+        )
+    ).all()
+    
+    return [
+        {
+            "curso_nombre": p.curso_nombre,
+        }
+        for p in pagos
+    ]
 
 
 class CursoRequest(BaseModel):
@@ -50,14 +76,17 @@ class CursoRequest(BaseModel):
 # CREAR PREFERENCIA
 # -------------------------
 @router.post("/crear-preferencia")
-def crear_preferencia(curso: CursoRequest):
+def crear_preferencia(
+    curso: CursoRequest,
+    user=Depends(get_current_user)
+):
 
     ngrok_url = get_ngrok_url()
 
     if not ngrok_url:
         return {"status": "error", "message": "Ngrok URL no disponible"}
 
-    external_reference = str(uuid.uuid4())
+    external_reference = f"{user.id}_{uuid.uuid4()}"
 
     preference_data = {
         "items": [
@@ -182,6 +211,13 @@ def process_payment_safe(payment_id: str):
     # Extraer nombre del curso desde los ítems del pago
     items = payment.get("additional_info", {}).get("items") or []
     curso_nombre = items[0].get("title", "Sin nombre") if items else "Sin nombre"
+    
+    usuario_id = None
+    if external_reference and "_" in external_reference:
+        try:
+            usuario_id = int(external_reference.split("_")[0])
+        except ValueError:
+            pass
 
     with Session(engine) as session:
 
@@ -193,6 +229,8 @@ def process_payment_safe(payment_id: str):
             existing.status = status
             existing.external_reference = external_reference
             existing.curso_nombre = curso_nombre
+            if usuario_id is not None:
+                existing.usuario_id = usuario_id
             session.add(existing)
 
         else:
@@ -202,6 +240,7 @@ def process_payment_safe(payment_id: str):
                     status=status,
                     external_reference=external_reference,
                     curso_nombre=curso_nombre,
+                    usuario_id=usuario_id
                 )
             )
 

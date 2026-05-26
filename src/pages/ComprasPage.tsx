@@ -51,6 +51,7 @@ export default function ComprasPage() {
               <thead className="bg-blue-600 text-white">
                 <tr>
                   <th className="px-4 py-3 text-left">#</th>
+                  <th className="px-4 py-3 text-left">User ID</th>
                   <th className="px-4 py-3 text-left">Curso</th>
                   <th className="px-4 py-3 text-left">Estado</th>
                   <th className="px-4 py-3 text-left">Payment ID</th>
@@ -66,6 +67,9 @@ export default function ComprasPage() {
                       className={`border-b ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50 transition-colors`}
                     >
                       <td className="px-4 py-3 font-mono text-gray-500">{c.id}</td>
+                      <td className="px-4 py-3 font-mono text-blue-600 font-bold">
+                        {c.usuario_id ?? "-"}
+                      </td>
                       <td className="px-4 py-3 font-semibold text-gray-800">{c.curso_nombre}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${cfg.className}`}>
