@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Query, Request, BackgroundTasks
+from fastapi.responses import RedirectResponse
 from sqlmodel import Session, select
 from pydantic import BaseModel
 
@@ -40,9 +41,9 @@ def crear_preferencia(curso: CursoRequest):
             }
         ],
         "back_urls": {
-            "success": "http://localhost:5173/pagos/success",
-            "failure": "http://localhost:5173/pagos/failure",
-            "pending": "http://localhost:5173/pagos/pending"
+            "success": f"{ngrok_url}/api/pagos/success",
+            "failure": f"{ngrok_url}/api/pagos/failure",
+            "pending": f"{ngrok_url}/api/pagos/pending"
         },
         "notification_url": f"{ngrok_url}/api/pagos/webhook",
         "auto_return": "approved",
@@ -51,9 +52,19 @@ def crear_preferencia(curso: CursoRequest):
 
     preference_response = sdk.preference().create(preference_data)
 
+    response_body = preference_response.get("response", {})
+    status_code = preference_response.get("status")
+
+    if "id" not in response_body:
+        return {
+            "status": "error",
+            "mp_status": status_code,
+            "mp_response": response_body
+        }
+
     return {
-        "id": preference_response["response"]["id"],
-        "init_point": preference_response["response"]["init_point"],
+        "id": response_body["id"],
+        "init_point": response_body["init_point"],
         "external_reference": external_reference
     }
 
@@ -67,17 +78,10 @@ def success(
     status: str = Query(None),
     external_reference: str = Query(None)
 ):
-
-    if not payment_id:
-        return {"status": "success", "warning": "missing payment_id"}
-
-    payment_info = sdk.payment().get(payment_id)
-
-    return {
-        "redirect_status": status,
-        "external_reference": external_reference,
-        "payment": payment_info.get("response")
-    }
+    params = f"?payment_id={payment_id}&status={status}&external_reference={external_reference}"
+    response = RedirectResponse(url=f"http://localhost:5173/pagos/success{params}")
+    response.set_cookie("ssbp", "1", domain=".ngrok-free.app")
+    return response
 
 
 @router.get("/failure")
@@ -86,12 +90,10 @@ def failure(
     status: str = Query(None),
     external_reference: str = Query(None)
 ):
-    return {
-        "status": "failure",
-        "redirect_status": status,
-        "payment_id": payment_id,
-        "external_reference": external_reference
-    }
+    params = f"?payment_id={payment_id}&status={status}&external_reference={external_reference}"
+    response = RedirectResponse(url=f"http://localhost:5173/pagos/failure{params}")
+    response.set_cookie("ssbp", "1", domain=".ngrok-free.app")
+    return response
 
 
 @router.get("/pending")
@@ -100,12 +102,10 @@ def pending(
     status: str = Query(None),
     external_reference: str = Query(None)
 ):
-    return {
-        "status": "pending",
-        "redirect_status": status,
-        "payment_id": payment_id,
-        "external_reference": external_reference
-    }
+    params = f"?payment_id={payment_id}&status={status}&external_reference={external_reference}"
+    response = RedirectResponse(url=f"http://localhost:5173/pagos/pending{params}")
+    response.set_cookie("ssbp", "1", domain=".ngrok-free.app")
+    return response
 
 
 
