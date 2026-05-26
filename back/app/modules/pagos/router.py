@@ -40,9 +40,9 @@ def crear_preferencia(curso: CursoRequest):
             }
         ],
         "back_urls": {
-            "success": f"{ngrok_url}/api/pagos/success",
-            "failure": f"{ngrok_url}/api/pagos/failure",
-            "pending": f"{ngrok_url}/api/pagos/pending"
+            "success": "http://localhost:5173/pagos/success",
+            "failure": "http://localhost:5173/pagos/failure",
+            "pending": "http://localhost:5173/pagos/pending"
         },
         "notification_url": f"{ngrok_url}/api/pagos/webhook",
         "auto_return": "approved",
