@@ -6,6 +6,9 @@ import LoginPage from "./pages/LoginPage";
 import PublicaPage from "./pages/PublicaPage";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./routes/PrivateRoute";
+import PaymentSuccess from "./pages/pagos/PaymentSucces";
+import PaymentFailure from "./pages/pagos/PaymentFailure";
+import PaymentPending from "./pages/pagos/PaymentPending";
 
 /**
  * Componente raíz de la aplicación.
@@ -23,6 +26,11 @@ function App() {
         {/* Rutas Públicas */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/publica" element={<PublicaPage />} />
+        
+        {/* Rutas de retorno de MercadoPago */}
+        <Route path="/pagos/success" element={<PaymentSuccess />} />
+        <Route path="/pagos/failure" element={<PaymentFailure />} />
+        <Route path="/pagos/pending" element={<PaymentPending />} />
 
         {/* El "/" lo mandamos al login o a la lista según la lógica de la rúbrica */}
         <Route path="/" element={<LoginPage />} />
