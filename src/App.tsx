@@ -7,6 +7,7 @@ import PublicaPage from "./pages/PublicaPage";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./routes/PrivateRoute";
 import CursosPage from "./pages/CursosPage";
+import ComprasPage from "./pages/ComprasPage";
 import PaymentSuccess from "./pages/pagos/PaymentSucces";
 import PaymentFailure from "./pages/pagos/PaymentFailure";
 import PaymentPending from "./pages/pagos/PaymentPending";
@@ -68,6 +69,14 @@ function App() {
           element={
             <PrivateRoute rol="ADMIN">
               <EditarPage />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/compras" 
+          element={
+            <PrivateRoute rol="ADMIN">
+              <ComprasPage />
             </PrivateRoute>
           } 
         />

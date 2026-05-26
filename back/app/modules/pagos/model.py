@@ -11,6 +11,7 @@ class Pagos(SQLModel, table=True):
     status: PaymentStatus = Field(index=True)
 
     external_reference: str = Field(index=True)
+    curso_nombre: str = Field(default="Sin nombre")
 
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

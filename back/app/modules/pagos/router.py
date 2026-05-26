@@ -1,16 +1,43 @@
-from fastapi import APIRouter, Query, Request, BackgroundTasks
+from fastapi import APIRouter, Depends, Query, Request, BackgroundTasks
 from fastapi.responses import RedirectResponse
 from sqlmodel import Session, select
 from pydantic import BaseModel
+from typing import List
 
 from app.core.mercadopago import sdk
 from app.core.helper import get_ngrok_url
-from app.core.database import engine
+from app.core.database import engine, get_session
 from app.modules.pagos.model import Pagos
+from app.modules.usuarios.router import get_current_admin_user
 
 import uuid
 
 router = APIRouter(prefix="/pagos", tags=["Pagos"])
+
+
+# -------------------------
+# LISTAR COMPRAS (ADMIN)
+# -------------------------
+@router.get("/", response_model=List[dict])
+def listar_compras(
+    session: Session = Depends(get_session),
+    admin=Depends(get_current_admin_user)
+):
+    """
+    Devuelve todas las compras registradas. Solo accesible para ADMIN.
+    """
+    pagos = session.exec(select(Pagos).order_by(Pagos.created_at.desc())).all()
+    return [
+        {
+            "id": p.id,
+            "payment_id": p.payment_id,
+            "status": p.status,
+            "curso_nombre": p.curso_nombre,
+            "external_reference": p.external_reference,
+            "created_at": p.created_at.isoformat(),
+        }
+        for p in pagos
+    ]
 
 
 
@@ -152,6 +179,10 @@ def process_payment_safe(payment_id: str):
 
     external_reference = payment.get("external_reference") or "unknown"
 
+    # Extraer nombre del curso desde los ítems del pago
+    items = payment.get("additional_info", {}).get("items") or []
+    curso_nombre = items[0].get("title", "Sin nombre") if items else "Sin nombre"
+
     with Session(engine) as session:
 
         existing = session.exec(
@@ -161,6 +192,7 @@ def process_payment_safe(payment_id: str):
         if existing:
             existing.status = status
             existing.external_reference = external_reference
+            existing.curso_nombre = curso_nombre
             session.add(existing)
 
         else:
@@ -168,7 +200,8 @@ def process_payment_safe(payment_id: str):
                 Pagos(
                     payment_id=str(payment_id),
                     status=status,
-                    external_reference=external_reference
+                    external_reference=external_reference,
+                    curso_nombre=curso_nombre,
                 )
             )
 

@@ -91,6 +91,15 @@ export default function Navbar() {
               ➕ Nuevo Participante
             </Link>
           )}
+          {user.rol === "ADMIN" && (
+            <Link 
+              to="/compras" 
+              onClick={() => setIsOpen(false)}
+              className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
+            >
+              🛒 Compras de Cursos
+            </Link>
+          )}
           <Link 
             to="/cursos" 
             onClick={() => setIsOpen(false)}
