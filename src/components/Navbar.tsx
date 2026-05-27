@@ -39,7 +39,7 @@ export default function Navbar() {
     <nav className="w-full bg-white shadow-sm mb-4 sticky top-0 z-50">
       <div className="bg-green-500 px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-black hover:scale-110 transition-transform cursor-pointer focus:outline-none"
           >
@@ -64,7 +64,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <span className="hidden md:block text-black font-medium">Hola, <b>{user.username}</b> ({user.rol})</span>
-          <button 
+          <button
             onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-bold transition-colors shadow-md"
           >
@@ -75,44 +75,44 @@ export default function Navbar() {
 
       <div className={`overflow-hidden transition-all duration-300 bg-green-600 ${isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"}`}>
         <div className="flex flex-col p-4 gap-3">
-          <Link 
-            to="/lista" 
+          <Link
+            to="/lista"
             onClick={() => setIsOpen(false)}
             className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
           >
-            📋 Lista de Participantes
+            ✦ Lista de Participantes
           </Link>
           {user.rol === "ADMIN" && (
-            <Link 
-              to="/nuevo" 
+            <Link
+              to="/nuevo"
               onClick={() => setIsOpen(false)}
               className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
             >
-              ➕ Nuevo Participante
+              ✦ Nuevo Participante
             </Link>
           )}
           {user.rol === "ADMIN" && (
-            <Link 
-              to="/compras" 
+            <Link
+              to="/compras"
               onClick={() => setIsOpen(false)}
               className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
             >
-              🛒 Compras de Cursos
+              ✦ Compras de Cursos
             </Link>
           )}
-          <Link 
-            to="/cursos" 
+          <Link
+            to="/cursos"
             onClick={() => setIsOpen(false)}
             className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
           >
-            🎓 Cursos
+            ✦ Cursos
           </Link>
-          <Link 
-            to="/publica" 
+          <Link
+            to="/publica"
             onClick={() => setIsOpen(false)}
             className="text-white font-semibold hover:bg-green-700 p-2 rounded transition-colors"
           >
-            🌐 Página Pública
+            ✦ Página Pública
           </Link>
         </div>
       </div>
