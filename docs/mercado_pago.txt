@@ -29,10 +29,42 @@
 
 ---
 
-# Usuarios de Prueba
+# TARJETA PRUEBA
+#Número: 4509 9535 6623 3704
+#CVV: 123
+#Vencimiento: cualquier futuro (ej: 11/30)
+#Titular: APRO
+#DNI: 12345678
 
-### Comprador
-- **User ID:** `2930382604`
-- **Usuario:** `TESTUSER7323947121085056875`
-- **Contraseña:** `VAnsy8IxGi`
-- **Código de verificación:** `382604`
+
+#CUENTA PRUEBA BUYER
+
+#User ID
+#3428575522
+
+#Usuario de prueba
+#TESTUSER3715551587173179783
+
+#Contraseña
+#Rosl1UoMz1
+
+#Código de verificación 
+#575522
+
+
+
+
+#CUENTA PRUEBA SELLER
+
+#User ID
+#3428575520
+
+#Usuario de prueba
+#TESTUSER6300229297920199595
+
+#Contraseña
+#aR9WjxW6rC
+
+#Codigo de verificacion
+#575520
+
