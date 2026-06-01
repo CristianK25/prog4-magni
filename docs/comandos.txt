@@ -3,6 +3,34 @@ INICIAR BACK:
     uvicorn main:app --reload --port 8002
 
 
+INICIALIZAR PROYECTO REACT
+
+    npm create vite@latest nombre-proyecto
+
+    seleccionar(React - TypeScript)
+
+    cd nombre-proyecto
+    npm install 
+    npm install -D tailwindcss@3 postcss autoprefixer
+
 INICIAR FRONT:
 
     npm run dev
+
+
+ESTRUCTURA FRON:
+
+    practica/
+├── src/
+│   ├── assets/       (Imágenes, íconos)
+│   ├── components/   (Componentes reutilizables: UI, Formularios, Tarjetas)
+│   ├── context/      (Contextos globales: useContext)
+│   ├── hooks/        (Custom hooks)
+│   ├── models/       (Interfaces y tipos de TypeScript)
+│   ├── pages/        (Vistas principales si usamos React Router)
+│   ├── reducers/     (Lógica de estado compleja: useReducer)
+│   ├── routes/       (Configuración de navegación)
+│   ├── services/     (Llamadas a APIs con fetch/axios)
+│   ├── utils/        (Funciones de ayuda)
+│   ├── App.tsx       (Limpio, solo un Hola Mundo)
+│   └── main.tsx      (Punto de entrada)
