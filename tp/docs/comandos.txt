@@ -13,6 +13,9 @@ INICIALIZAR PROYECTO REACT
     npm install 
     npm install -D tailwindcss@3 postcss autoprefixer
 
+
+    npm install react-router-dom
+
 INICIAR FRONT:
 
     npm run dev
