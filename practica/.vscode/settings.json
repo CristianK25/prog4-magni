@@ -1,0 +1,15 @@
+{
+  "files.exclude": {
+    "node_modules/": true,
+    "package.json": true,
+    "package-lock.json": true,
+    "tsconfig.json": true,
+    "tsconfig.node.json": true,
+    "tsconfig.app.json": true,
+    "vite.config.ts": true,
+    "eslint.config.js": true,
+    "README.md": true,
+    "pnpm-lock.yaml": true,
+    "**/*.save": true
+  }
+}
